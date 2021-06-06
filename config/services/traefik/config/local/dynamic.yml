@@ -8,5 +8,5 @@ tls:
   stores:
     default:
       defaultCertificate:
-        certFile: /certs/lokal.cer
-        keyFile: /certs/lokal.key
+        certFile: /certs/local.cer
+        keyFile: /certs/local.key

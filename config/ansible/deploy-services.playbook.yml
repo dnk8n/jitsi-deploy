@@ -50,6 +50,7 @@
       file:
         path: "{{ updated_envrc.ACME_CERTS_DIR }}"
         state: directory
+      when: "{{ local_install | default(false) }}"
 
     - name: fetch file certs from nextcloud (TODO In future we want to mount nextcloud drive so that certs can be updated)
       markuman.nextcloud.file:
@@ -63,6 +64,7 @@
       with_items:
         - "{{ updated_envrc.ACME_DOMAIN }}.cer"
         - "{{ updated_envrc.ACME_DOMAIN }}.key"
+      when: "{{ local_install | default(false) }}"
 
     - name: Allow .envrc
       shell: "direnv allow ."
@@ -71,21 +73,6 @@
 
     - name: Docker-compose pull
       shell: "direnv exec . dc pull"
-      args:
-        chdir: "{{ git_dest }}"
-
-    - name: Generate Kiwix Library file
-      shell: "direnv exec . config/services/kiwix/generate-library.sh"
-      args:
-        chdir: "{{ git_dest }}"
-
-    - name: Docker-compose up mariadb
-      shell: "direnv exec . dc up -d mariadb"
-      args:
-        chdir: "{{ git_dest }}"
-
-    - name: Init databases
-      shell: "direnv exec . config/services/mariadb/scripts/init-databases.sh"
       args:
         chdir: "{{ git_dest }}"
 

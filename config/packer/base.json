@@ -23,7 +23,7 @@
       "user": "{{user `root_ssh_user`}}",
       "playbook_file": "../ansible/preprovision.playbook.yml",
       "ansible_env_vars": ["ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_FORCE_COLOR=true", "ANSIBLE_VERBOSITY=0"],
-      "extra_arguments": ["-e root_ssh_user={{user `root_ssh_user`}}", "-e primary_ssh_user={{user `primary_ssh_user`}}"],
+      "extra_arguments": ["-e setup_ssh=true", "-e root_ssh_user={{user `root_ssh_user`}}", "-e primary_ssh_user={{user `primary_ssh_user`}}"],
       "use_proxy": false,
       "only": ["hcloud"]
     },
@@ -33,6 +33,22 @@
       "playbook_file": "../ansible/base.playbook.yml",
       "ansible_env_vars": ["ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_FORCE_COLOR=true", "ANSIBLE_VERBOSITY=0"],
       "extra_arguments": ["-e root_ssh_user={{user `root_ssh_user`}}", "-e primary_ssh_user={{user `primary_ssh_user`}}"],
+      "use_proxy": false
+    },
+    {
+      "type": "ansible",
+      "user": "{{user `primary_ssh_user`}}",
+      "playbook_file": "../ansible/deploy-services.playbook.yml",
+      "ansible_env_vars": ["ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_FORCE_COLOR=true", "ANSIBLE_VERBOSITY=0"],
+      "extra_arguments": ["-e repo_owner=dnk8n", "-e repo_name=jitsi-deploy", "-e repo_branch=main", "-e primary_ssh_user={{user `primary_ssh_user`}}"],
+      "use_proxy": false
+    },
+    {
+      "type": "ansible",
+      "user": "{{user `primary_ssh_user`}}",
+      "playbook_file": "../ansible/deploy-jitsi.playbook.yml",
+      "ansible_env_vars": ["ANSIBLE_HOST_KEY_CHECKING=False", "ANSIBLE_FORCE_COLOR=true", "ANSIBLE_VERBOSITY=0"],
+      "extra_arguments": ["-e repo_name=jitsi-deploy", "-e primary_ssh_user={{user `primary_ssh_user`}}"],
       "use_proxy": false
     },
     {

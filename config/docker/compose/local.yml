@@ -1,45 +1,6 @@
 version: "3.8"
 
-networks:
-  mail:
-    name: mail
-
 services:
-  mailhog:
-    container_name: mailhog
-    image: mailhog/mailhog:latest
-    networks:
-      - traefik
-      - mail
-    labels:
-      traefik.enable: "true"
-      traefik.http.routers.mailhog.entrypoints: websecure
-      traefik.http.routers.mailhog.rule: Host(`${DOMAIN_MAILHOG}`)
-      traefik.http.routers.mailhog.tls: "true"
-      traefik.http.services.mailhog.loadbalancer.server.port: 8025
-      traefik.http.routers.mailhog.middlewares: traefik-auth
-    restart: unless-stopped
-
-  matomo:
-    networks:
-      - mail
-    depends_on:
-      - mailhog
-
-  netdata:
-    labels:
-      traefik.http.routers.netdata.middlewares: traefik-auth
-
-  prometheus:
-    labels:
-      traefik.http.routers.prometheus.middlewares: traefik-auth
-
-  resourcespace:
-    networks:
-      - mail
-    depends_on:
-      - mailhog
-
   traefik:
     command:
       - --accessLog=true
@@ -71,13 +32,3 @@ services:
     labels:
       traefik.http.middlewares.traefik-auth.basicauth.users: ${TRAEFIK_BASICAUTH_USERS}
       traefik.http.routers.traefik.middlewares: traefik-auth
-
-  transmission:
-    labels:
-      traefik.http.routers.transmission.middlewares: traefik-auth
-
-  wordpress:
-    networks:
-      - mail
-    depends_on:
-      - mailhog

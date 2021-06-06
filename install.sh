@@ -12,8 +12,8 @@ apt install --yes software-properties-common unzip
 apt-add-repository --yes --update ppa:ansible/ansible
 apt install --yes ansible
 
-export repo_owner=Wakoma
-export repo_name=Lokal
+export repo_owner=dnk8n
+export repo_name=jitsi-deploy
 export repo_branch=main
 
 temp_file=$(mktemp --dry-run)

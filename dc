@@ -1,17 +1,14 @@
 #!/usr/bin/env bash
 
-if [[ "${DEPLOYMENT_ENVIRONMENT}" == "develop" ]]
+if [[ "${DEPLOYMENT_ENVIRONMENT}" == "dev" ]]
 then
    DC_PREFIX=""
-elif [[ "${DEPLOYMENT_ENVIRONMENT}" == "staging" ]]
+elif [[ "${DEPLOYMENT_ENVIRONMENT}" == "live" ]]
 then
-   DC_PREFIX=" -f ${PROJECT_ROOT}/docker-compose.yml -f ${PROJECT_ROOT}/config/docker/compose/live.yml -f ${PROJECT_ROOT}/config/docker/compose/staging.yml"
-elif [[ "${DEPLOYMENT_ENVIRONMENT}" == "production" ]]
+    DC_PREFIX=" -f ${PROJECT_ROOT}/docker-compose.yml -f ${PROJECT_ROOT}/config/docker/compose/live.yml"
+elif [[ "${DEPLOYMENT_ENVIRONMENT}" == "local" ]]
 then
-    DC_PREFIX=" -f ${PROJECT_ROOT}/docker-compose.yml -f ${PROJECT_ROOT}/config/docker/compose/live.yml -f ${PROJECT_ROOT}/config/docker/compose/prod.yml"
-elif [[ "${DEPLOYMENT_ENVIRONMENT}" == "local-production" ]]
-then
-    DC_PREFIX=" -f ${PROJECT_ROOT}/docker-compose.yml -f ${PROJECT_ROOT}/config/docker/compose/local-prod.yml"
+    DC_PREFIX=" -f ${PROJECT_ROOT}/docker-compose.yml -f ${PROJECT_ROOT}/config/docker/compose/local.yml"
 else
    >&2 echo "Invalid DEPLOYMENT_ENVIRONMENT=${DEPLOYMENT_ENVIRONMENT}"
    exit 1
