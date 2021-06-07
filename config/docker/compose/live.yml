@@ -7,10 +7,14 @@ services:
       - --api.insecure=false
       - --api.dashboard=true
       - --api.debug=false
-      - --certificatesResolvers.dns.acme.dnsChallenge.delayBeforeCheck=60
-      - --certificatesResolvers.dns.acme.dnsChallenge.provider=${DNS_PROVIDER}
-      - --certificatesResolvers.dns.acme.email=${ACME_EMAIL}
-      - --certificatesResolvers.dns.acme.storage=/acme/acme.json
+      - --certificatesresolvers.http.acme.httpchallenge=true
+      - --certificatesresolvers.http.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.http.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.http.acme.storage=/acme/acme.json
+      #- --certificatesResolvers.dns.acme.dnsChallenge.delayBeforeCheck=60
+      #- --certificatesResolvers.dns.acme.dnsChallenge.provider=${DNS_PROVIDER}
+      #- --certificatesResolvers.dns.acme.email=${ACME_EMAIL}
+      #- --certificatesResolvers.dns.acme.storage=/acme/acme.json
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entryPoint.to=websecure
@@ -31,7 +35,7 @@ services:
     labels:
       traefik.http.middlewares.traefik-auth.basicauth.users: ${TRAEFIK_BASICAUTH_USERS}
       traefik.http.routers.traefik.middlewares: traefik-auth
-      traefik.http.routers.traefik.tls.certresolver: dns
+      traefik.http.routers.traefik.tls.certresolver: http
     volumes:
       - ./config/services/traefik/config/live/dynamic.yml:/config/live.yml
       - ./config/services/traefik/config/local/dynamic.yml:/config/local.yml
