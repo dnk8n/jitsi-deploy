@@ -14,7 +14,7 @@
         jitsi_release: "stable-5870"
         # TODO: Avoid hardcoding
         # domain_jitsi: "meet.{{ lookup('env', 'DOMAIN') }}"
-        domain_jitsi: "meet.nadine-auer.com"
+        domain_jitsi: "meet.remote-psychologist.com"
 
     - name: Set more facts
       set_fact:
