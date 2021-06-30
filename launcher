@@ -34,7 +34,7 @@ update_src () {
 }
 
 # Download all source code if this script is being executed in isolation
-this_src_dir = "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+this_src_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 if [ ${this_src_dir} = "/dev/fd" ]; then
   echo "Bootstrapping..."
   update_src
