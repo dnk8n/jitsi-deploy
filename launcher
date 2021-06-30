@@ -33,7 +33,7 @@ update_src () {
 }
 
 # Download all source code if this script is being executed in isolation
-echo "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+ls "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 # if ! command -v ansible --version &> /dev/null
 # then
 #   update_src ()
