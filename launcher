@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if (( EUID != 0 )); then
+   echo "This script needs to be run as root, e.g: sudo $0" 1>&2
+   exit 100
+fi
+
+if ! command -v ansible --version &> /dev/null
+then
+  apt update
+  apt install --yes software-properties-common unzip
+  apt-add-repository --yes --update ppa:ansible/ansible
+  apt install --yes ansible
+fi
+
+update_src () {
+  repo_owner=dnk8n
+  repo_name=jitsi-deploy
+  repo_branch=refactor
+
+  root_src_dir=/usr/src
+  mkdir -p ${root_src_dir}
+
+  temp_file=$(mktemp --dry-run)
+  wget https://github.com/${repo_owner}/${repo_name}/archive/${repo_branch}.zip -O ${temp_file}
+  src_dir=${root_src_dir}/${repo_name}-${repo_branch}
+  rm -rf ${src_dir}
+  unzip ${temp_file} -d ${root_src_dir}
+  chmod -R 700 ${src_dir}
+  rm ${temp_file}
+}
+
+# Download all source code if this script is being executed in isolation
+echo "$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# if ! command -v ansible --version &> /dev/null
+# then
+#   update_src ()
+# fi
+
+# # Update source
+# if ! command -v ansible --version &> /dev/null
+# then
+#   update_src ()
+# fi
+
+
+# cd ${src_dir}
+# config/ansible/run.sh

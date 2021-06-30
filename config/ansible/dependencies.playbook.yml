@@ -14,23 +14,11 @@
         upgrade: dist
         autoclean: yes
         autoremove: yes
-    
+
     - name: Install a list of packages
       apt:
         pkg:
-          - git
-          - direnv
-
-    - name: Register primary user's details
-      user:
-        name: "{{ primary_ssh_user }}"
-      register: primary_ssh_user_params
-
-    - name: Hook direnv into primary user's shell
-      lineinfile:
-        path: "{{ primary_ssh_user_params.home }}/.bashrc"
-        insertafter: EOF
-        line: eval "$(direnv hook bash)"
+          - unzip
 
 - name: Ensure firewall is set up
   hosts: all
@@ -42,19 +30,8 @@
       - 22
       - 80
       - 443
-      - 51413
-      - 8080
-      - 8843
-      - 8880
-      - 6789
       - 4443
     firewall_allowed_udp_ports:
-      - 51413
-      - 3478
-      - 10001
-      - 1900
-      - 5514
-      - 7359
       - 10000
     firewall_disable_ufw: true
     firewall_enable_ipv6: false

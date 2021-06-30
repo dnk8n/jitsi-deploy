@@ -24,19 +24,16 @@ su ${PRIMARY_SSH_USER} -c "\
   ansible-playbook \
     -e primary_ssh_user=${PRIMARY_SSH_USER} \
     -i config/ansible/hosts.yml \
-    config/ansible/base.playbook.yml"
+    config/ansible/dependencies.playbook.yml"
 
 su ${PRIMARY_SSH_USER} -c "\
   ansible-playbook \
     -e primary_ssh_user=${PRIMARY_SSH_USER} \
-    -e repo_owner=${repo_owner} \
-    -e repo_name=${repo_name} \
-    -e repo_branch=${repo_branch} \
     -i config/ansible/hosts.yml \
-    config/ansible/deploy-services.playbook.yml"
+    config/ansible/deploy-traefik.playbook.yml"
 
 su ${PRIMARY_SSH_USER} -c "\
-  direnv exec . ansible-playbook \
+  ansible-playbook \
     -e primary_ssh_user=${PRIMARY_SSH_USER} \
     -e repo_name=${repo_name} \
     -i config/ansible/hosts.yml \

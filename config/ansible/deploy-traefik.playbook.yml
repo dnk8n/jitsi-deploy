@@ -1,0 +1,31 @@
+---
+- name: Deploy Traefik
+  hosts: all
+  tasks:
+
+    - name: Register primary user's details
+      user:
+        name: "{{ primary_ssh_user }}"
+      register: primary_ssh_user_params
+
+    - name: Set facts
+      set_fact:
+        traefik_dest: "{{ base_dest }}/deployed/services/traefik"
+
+    - name: Setup traefik service directory
+      file:
+        path: "{{ primary_ssh_user_params.home }}/services/traefik"
+        state: directory
+
+    - name: Copy .env from template
+      ansible.builtin.template:
+        src: "{{ base_dest }}/config/services/traefik/{{ item }}.j2"
+        dest: "{{ traefik_dest }}/{{ item }}"
+      with_items:
+         - .env
+         - docker-compose.yml
+
+    - name: Docker-compose pull
+      shell: "docker-compose up -d --pull"
+      args:
+        chdir: "{{ traefik_dest }}"

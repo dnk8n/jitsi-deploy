@@ -10,11 +10,24 @@
 
     - name: Set facts
       set_fact:
+        base_dest: "{{ primary_ssh_user_params.home }}/{{ repo_name }}"
+
+    - name: Get .envrc file content
+      shell: . {{ git_dest }}/.envrc && env
+      register: envrc_out
+
+    - name: Parse environment
+      set_fact:
+        envrc: "{{ ('{' + envrc_out.stdout_lines | map('regex_replace', '([^=]*)=(.*)', '\"\\1\": \"\\2\"') | join(',') + '}') | from_json }}"
+
+    - name: Set facts
+      set_fact:
         jitsi_project: "docker-jitsi-meet"
         jitsi_release: "stable-5870"
-        # TODO: Avoid hardcoding
-        # domain_jitsi: "meet.{{ lookup('env', 'DOMAIN') }}"
-        domain_jitsi: "meet.dnk8n.dev"
+        domain_jitsi: "meet.{{ envrc.DOMAIN }}"
+        tz: "{{ envrc.TZ }}"
+        cert_resolver: "{{ envrc.CERT_RESOLVER | default('dns') }}"
+        server_is_live: "{{ envrc.SERVER_IS_LIVE | default(false) }}"
 
     - name: Set more facts
       set_fact:
@@ -23,11 +36,12 @@
 
     - name: Set passwords
       set_fact:
-        jicofo_auth_password: "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/jicofo_auth_password length=16 chars=ascii_letters') }}"
-        jvb_auth_password: "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/jvb_auth_password length=16 chars=ascii_letters') }}"
-        jigasi_xmpp_password: "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/jigasi_xmpp_password length=16 chars=ascii_letters') }}"
-        jibri_recorder_password: "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/jibri_recorder_password length=16 chars=ascii_letters') }}"
-        jibri_xmpp_password: "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/jibri_xmpp_password length=16 chars=ascii_letters') }}"
+        "{{ item }}_password": "{{ lookup('password', '{{ jitsi_dest }}/.ansible.pass/{{ item }}_password length=16 chars=ascii_letters') }}"
+      with_items:
+        - jicofo_auth
+        - jvb_auth
+        - jigasi_xmpp
+        - jibri_xmpp
 
     - name: Unarchive latest jitsi source
       ansible.builtin.unarchive:
@@ -52,15 +66,15 @@
 
     - name: Get .env file content
       shell: set -o allexport && . {{ jitsi_dest }}/.env && env && set +o allexport
-      register: updated_env_out
+      register: env_out
 
     - name: Parse environment
       set_fact:
-        updated_env: "{{ ('{' + updated_env_out.stdout_lines | map('regex_replace', '([^=]*)=(.*)', '\"\\1\": \"\\2\"') | join(',') + '}') | from_json }}"
+        env: "{{ ('{' + env_out.stdout_lines | map('regex_replace', '([^=]*)=(.*)', '\"\\1\": \"\\2\"') | join(',') + '}') | from_json }}"
     
     - name: Create directories
       file:
-        path: "{{ updated_env.CONFIG }}/{{ item }}"
+        path: "{{ env.CONFIG }}/{{ item }}"
         state: directory
       with_items:
         - web/letsencrypt
